@@ -8,5 +8,29 @@
 </head>
 <body>
     <h1> Ashychronous testinsg </h1>
+
+    <a id="button">Fetch</a>
 </body>
 </html>
+
+
+<script> 
+
+const btn = document.getElementById('button')
+const textArea = document.getElementsByTagName('h1')[0]
+btn.addEventListener('click', fetchClick)
+
+async function fetchClick() {
+
+    try {
+    const res = await fetch('https://swapi.dev/api/people')
+    const data = await res.json()
+    
+    textArea.textContent = JSON.parse(
+        JSON.stringify(data, null, 2))
+        .results[0].name
+    } catch (err) {
+        alert(err.message)
+    }
+}
+</script>
