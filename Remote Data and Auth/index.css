@@ -1,0 +1,13 @@
+h1 {
+    color: red
+}
+
+.app {
+    margin-left: 20vw;
+    margin-top: 20vh;
+    width: 40vw;
+}
+
+.post h1 {
+    float: right;
+}

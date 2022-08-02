@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <button> Make auth req</button>
+
+    <form id="register"> 
+        <input type="text" name="email">
+        <input type="text" name="password">
+        <input type="text" name="repass">
+        <input type="submit" value="Register">
+    </form>
+
+    <form id="login"> 
+        <input type="text" name="email">
+        <input type="text" name="password">
+        <input type="submit" value="Login">
+    </form>
+
+    <script>
+        document.querySelector('button').addEventListener('click', async () => {
+            const token = sessionStorage.accessToken
+
+            const response = await fetch('http://localhost:3030/data/recipes', {
+                headers: {
+                    'X-Authorization': token
+                }
+            });
+
+            const responseData = await response.json()
+            sessionStorage.setItem('accessToken', responseData.accessToken)
+
+            console.log(responseData)
+        })
+        
+        document.getElementById('register').addEventListener('submit', onSubmit)
+        document.getElementById('login').addEventListener('submit', login)
+
+        async function onSubmit(ev) {
+            ev.preventDefault()
+
+            const formData = new FormData(ev.target);
+
+            const data = {
+                email: formData.get('email'),
+                password: formData.get('password')
+            }
+
+            console.log(ev.FormData)
+
+            try {
+
+                if (formData.get('password') != formData.get('repass')) {
+                    throw new Error("Passwords didn't match")
+                }
+
+                const response = await fetch('http://localhost:3030/users/register', {
+                    method: 'post',
+                    headers: {
+                        'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json()
+                    throw new Error(error.message)
+                }
+
+                const responseData = await response.json();
+                sessionStorage.setItem('accessToken', responseData.accessToken)
+
+                console.log(responseData)
+        } catch (err) {
+            alert(err.message)
+        }
+        }
+    
+        async function login(ev) {
+
+            const formData = new FormData(ev.target)
+
+            const data = {
+                'email': formData.get('email'),
+                'password': formData.get('password'),
+            }
+
+            try {
+                const response = await fetch('http://localhost:3030/users/login', {
+                    method: 'post',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data),
+                })
+                console.log(response)
+                if (!response.ok) {
+                    const error = await response.json()
+                    throw new Error(error.message)
+                }
+
+                const responseData = await response.json()
+
+                sessionStorage.setItem('accessToken', responseData.accessToken)
+            } catch (err) {
+                alert(err.message)
+            }
+        }
+    </script>
+</body>
+</html>
